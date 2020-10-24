@@ -7,13 +7,10 @@ fi
 
 classes="${1}"
 
-#Download pre-trained yolov4 weights
-if [ ! -e yolov4.conv.1237 ]; then
-    wget https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137 
-fi
-
 # Configure yolo-obj cfg
-cp cfg/yolov4-custom.cfg cfg/yolo-obj.cfg
+if [ ! -e  cfg/yolo-obj.cfg ]; then
+    cp -rfv cfg/yolov4-custom.cfg cfg/yolo-obj.cfg
+fi
 max_batches=$((${classes}*2000))
 step1=$((${max_batches}*8/10))
 step2=$((${max_batches}*9/10))
@@ -37,3 +34,14 @@ names = data/obj.names
 backup = backup/
 EOF
 
+# Images 
+echo "Copy your images to build\darknet\x64\data\obj\ !"
+echo "Next, mark your images with Yolo_mark!"
+
+
+#Download pre-trained yolov4 weights
+if [ ! -e ./build/darknet/x64/yolov4.conv.1237 ]; then
+    echo "Downloading pre-trained weights!"
+    wget https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137
+    mv -fv yolov4.conv.137 build\darknet\x64
+fi
