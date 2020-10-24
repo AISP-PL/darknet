@@ -2,7 +2,8 @@
 
 ## Quick start - requirements for compilation
 
-Install 
+**Install** 
+
 - CUDA 10.0
 - libcudnn7
 
@@ -12,7 +13,8 @@ sudo apt install libcudnn7
 sudo apt install libcudnn7-dev
 ```
 
-Compile and get yolo4 weights.
+**Compile** and get yolo4 weights.
+
 ```shell
 make clean
 make -j9
@@ -20,7 +22,7 @@ wget https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optim
 
 ```
 
-Validate
+**Validate**
 
 ```shell
 # Images tests
@@ -31,7 +33,7 @@ wget https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_5mb.mp4 -O t
 ./darknet detector demo ./cfg/coco.data ./cfg/yolov4.cfg ./yolov4.weights test.mp4 -i 0 -thresh 0.25
 ```
 
-Use in your project (copy files)
+**Use** in your project (copy files)
 
 ```shell
 cp -rf darknet /your/project/location/
@@ -44,9 +46,26 @@ cp -rf yolov4.weights /your/project/location/cfg/
 
 ```
 
+**Training yolov4**
 
+```shell
+#Download pre-trained yolov4 weights
+wget https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137 
+cp cfg/yolov4-custom.cfg cfg/yolo-obj.cfg
 
-## (neural networks for object detection)
+# Write object names
+touch build/darknet/x64/data/obj.names
+kate build/darknet/x64/data/obj.names
+touch build/darknet/x64/data/obj.data
+
+```
+
+Change
+
+- batch=64
+- subdivisions=16
+- change line max_batches to (`classes*2000` but not less than number of training images, but not less than number of training images and not less than `6000`), f.e. [`max_batches=6000`](https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L20) if you train for 3 classes (neural networks for object detection)
+- 
 
 Paper Yolo v4: https://arxiv.org/abs/2004.10934
 
