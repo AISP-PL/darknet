@@ -56,3 +56,4 @@ uselib
 uselib_track
 darknet
 test.mp4
+coco/
