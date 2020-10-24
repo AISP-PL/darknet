@@ -1,5 +1,36 @@
 # Yolo v4, v3 and v2 for Windows and Linux
 
+## Quick start - requirements for compilation
+
+Install 
+- CUDA 10.0
+- libcudnn7
+
+```shell
+sudo apt-get install cuda-10-0
+sudo apt install libcudnn7
+sudo apt install libcudnn7-dev
+```
+
+Compile and get yolo4 weights.
+```shell
+make clean
+make -j9
+wget https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights
+
+```
+
+Validate
+
+```shell
+# Images tests
+image_yolov4.sh # Test on dog file
+./darknet detector test ./cfg/coco.data ./cfg/yolov4.cfg ./yolov4.weights test.jpeg -i 0 -thresh 0.25 # Test on attached test.jpeg
+# Video tests
+wget https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_5mb.mp4 -O test.mp4
+./darknet detector demo ./cfg/coco.data ./cfg/yolov4.cfg ./yolov4.weights test.mp4 -i 0 -thresh 0.25
+```
+
 ## (neural networks for object detection)
 
 Paper Yolo v4: https://arxiv.org/abs/2004.10934
@@ -52,7 +83,7 @@ About Darknet framework: http://pjreddie.com/darknet/
 10. [How to mark bounded boxes of objects and create annotation files](#how-to-mark-bounded-boxes-of-objects-and-create-annotation-files)
 11. [How to use Yolo as DLL and SO libraries](#how-to-use-yolo-as-dll-and-so-libraries)
 
-![Darknet Logo](http://pjreddie.com/media/files/darknet-black-small.png) 
+
 
 ![modern_gpus](https://user-images.githubusercontent.com/4096485/82835867-f1c62380-9ecd-11ea-9134-1598ed2abc4b.png) AP50:95 / AP50 - FPS (Tesla V100) Paper: https://arxiv.org/abs/2004.10934 
 
