@@ -42,6 +42,7 @@ backup = backup/
 EOF
 
 # Images 
+mkdir -p build/darknet/x64/data/obj/
 echo "(config) Copy your images to build/darknet/x64/data/obj/ !"
 echo "(config) Next, mark your images with Yolo_mark!"
 
