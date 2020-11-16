@@ -60,12 +60,25 @@ touch build/darknet/x64/data/obj.data
 
 ```
 
-Change
+Configuration `.cfg file` description
+
+- https://github.com/AlexeyAB/darknet/wiki/CFG-Parameters-in-the-%5Bnet%5D-section
+- https://github.com/AlexeyAB/darknet/wiki/CFG-Parameters-in-the-different-layers
+
+Change in *.cfg file*
 
 - batch=64
 - subdivisions=16
 - change line max_batches to (`classes*2000` but not less than number of training images, but not less than number of training images and not less than `6000`), f.e. [`max_batches=6000`](https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L20) if you train for 3 classes (neural networks for object detection)
-- 
+- If you ran out of GPU memory - change `width,height to 416`
+
+
+
+After training
+
+- Increase network-resolution by set in your `.cfg`-file (`height=608` and `width=608`) or (`height=832` and `width=832`) or (any value multiple of 32) - this increases the precision and makes it possible to detect small objects: [link](https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L8-L9)
+
+
 
 Paper Yolo v4: https://arxiv.org/abs/2004.10934
 
