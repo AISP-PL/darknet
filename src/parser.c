@@ -231,6 +231,9 @@ convolutional_layer parse_convolutional(list *options, size_params params)
     layer.reverse = option_find_float_quiet(options, "reverse", 0);
     layer.coordconv = option_find_int_quiet(options, "coordconv", 0);
 
+    layer.stream = option_find_int_quiet(options, "stream", -1);
+    layer.wait_stream_id = option_find_int_quiet(options, "wait_stream", -1);
+
     if(params.net.adam){
         layer.B1 = params.net.B1;
         layer.B2 = params.net.B2;
@@ -454,6 +457,7 @@ layer parse_yolo(list *options, size_params params)
     }
     //assert(l.outputs == params.inputs);
 
+    l.show_details = option_find_int_quiet(options, "show_details", 1);
     l.max_delta = option_find_float_quiet(options, "max_delta", FLT_MAX);   // set 10
     char *cpc = option_find_str(options, "counters_per_class", 0);
     l.classes_multipliers = get_classes_multipliers(cpc, classes, l.max_delta);
@@ -461,6 +465,7 @@ layer parse_yolo(list *options, size_params params)
     l.label_smooth_eps = option_find_float_quiet(options, "label_smooth_eps", 0.0f);
     l.scale_x_y = option_find_float_quiet(options, "scale_x_y", 1);
     l.objectness_smooth = option_find_int_quiet(options, "objectness_smooth", 0);
+    l.new_coords = option_find_int_quiet(options, "new_coords", 0);
     l.iou_normalizer = option_find_float_quiet(options, "iou_normalizer", 0.75);
     l.obj_normalizer = option_find_float_quiet(options, "obj_normalizer", 1);
     l.cls_normalizer = option_find_float_quiet(options, "cls_normalizer", 1);
@@ -1105,6 +1110,9 @@ route_layer parse_route(list *options, size_params params)
     layer.h = first.h;
     layer.c = layer.out_c;
 
+    layer.stream = option_find_int_quiet(options, "stream", -1);
+    layer.wait_stream_id = option_find_int_quiet(options, "wait_stream", -1);
+
     if (n > 3) fprintf(stderr, " \t    ");
     else if (n > 1) fprintf(stderr, " \t            ");
     else fprintf(stderr, " \t\t            ");
@@ -1153,12 +1161,24 @@ void parse_net_options(list *options, network *net)
     net->batch *= net->time_steps;  // mini_batch * time_steps
     net->subdivisions = subdivs;    // number of mini_batches
 
+    net->weights_reject_freq = option_find_int_quiet(options, "weights_reject_freq", 0);
+    net->equidistant_point = option_find_int_quiet(options, "equidistant_point", 0);
+    net->badlabels_rejection_percentage = option_find_float_quiet(options, "badlabels_rejection_percentage", 0);
+    net->num_sigmas_reject_badlabels = option_find_float_quiet(options, "num_sigmas_reject_badlabels", 0);
+    net->ema_alpha = option_find_float_quiet(options, "ema_alpha", 0);
+    *net->badlabels_reject_threshold = 0;
+    *net->delta_rolling_max = 0;
+    *net->delta_rolling_avg = 0;
+    *net->delta_rolling_std = 0;
     *net->seen = 0;
     *net->cur_iteration = 0;
+    *net->cuda_graph_ready = 0;
+    net->use_cuda_graph = option_find_int_quiet(options, "use_cuda_graph", 0);
     net->loss_scale = option_find_float_quiet(options, "loss_scale", 1);
     net->dynamic_minibatch = option_find_int_quiet(options, "dynamic_minibatch", 0);
     net->optimized_memory = option_find_int_quiet(options, "optimized_memory", 0);
     net->workspace_size_limit = (size_t)1024*1024 * option_find_float_quiet(options, "workspace_size_limit_MB", 1024);  // 1024 MB by default
+
 
     net->adam = option_find_int_quiet(options, "adam", 0);
     if(net->adam){
@@ -1661,7 +1681,7 @@ network parse_network_cfg_custom(char *filename, int batch, int time_steps)
     fprintf(stderr, "avg_outputs = %d \n", avg_outputs);
 #ifdef GPU
     get_cuda_stream();
-    get_cuda_memcpy_stream();
+    //get_cuda_memcpy_stream();
     if (gpu_index >= 0)
     {
         int size = get_network_input_size(net) * net.batch;
@@ -1815,6 +1835,31 @@ void save_convolutional_weights(layer l, FILE *fp)
     //}
 }
 
+void save_convolutional_weights_ema(layer l, FILE *fp)
+{
+    if (l.binary) {
+        //save_convolutional_weights_binary(l, fp);
+        //return;
+    }
+#ifdef GPU
+    if (gpu_index >= 0) {
+        pull_convolutional_layer(l);
+    }
+#endif
+    int num = l.nweights;
+    fwrite(l.biases_ema, sizeof(float), l.n, fp);
+    if (l.batch_normalize) {
+        fwrite(l.scales_ema, sizeof(float), l.n, fp);
+        fwrite(l.rolling_mean, sizeof(float), l.n, fp);
+        fwrite(l.rolling_variance, sizeof(float), l.n, fp);
+    }
+    fwrite(l.weights_ema, sizeof(float), num, fp);
+    //if(l.adam){
+    //    fwrite(l.m, sizeof(float), num, fp);
+    //    fwrite(l.v, sizeof(float), num, fp);
+    //}
+}
+
 void save_batchnorm_weights(layer l, FILE *fp)
 {
 #ifdef GPU
@@ -1844,7 +1889,7 @@ void save_connected_weights(layer l, FILE *fp)
     }
 }
 
-void save_weights_upto(network net, char *filename, int cutoff)
+void save_weights_upto(network net, char *filename, int cutoff, int save_ema)
 {
 #ifdef GPU
     if(net.gpu_index >= 0){
@@ -1868,7 +1913,12 @@ void save_weights_upto(network net, char *filename, int cutoff)
     for(i = 0; i < net.n && i < cutoff; ++i){
         layer l = net.layers[i];
         if (l.type == CONVOLUTIONAL && l.share_layer == NULL) {
-            save_convolutional_weights(l, fp);
+            if (save_ema) {
+                save_convolutional_weights_ema(l, fp);
+            }
+            else {
+                save_convolutional_weights(l, fp);
+            }
         } if (l.type == SHORTCUT && l.nweights > 0) {
             save_shortcut_weights(l, fp);
         } if(l.type == CONNECTED){
@@ -1931,7 +1981,7 @@ void save_weights_upto(network net, char *filename, int cutoff)
 }
 void save_weights(network net, char *filename)
 {
-    save_weights_upto(net, filename, net.n);
+    save_weights_upto(net, filename, net.n, 0);
 }
 
 void transpose_matrix(float *a, int rows, int cols)
