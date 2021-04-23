@@ -1,6 +1,7 @@
 echo "Clear backup!"
 rm -rfv backup.old/
 mv backup backup.old
+mkdir -p backup
 
 choice=$(dialog --clear --backtitle "Select" \
        --title "YOLO model to training" --menu "Choose one of the following models:" \
