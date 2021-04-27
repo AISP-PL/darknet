@@ -13,7 +13,11 @@ elif [ ${gpus} -eq 4 ]; then
     gpuArg="0,1,2,3"
 fi
 
+# Get name of trained YOLO
+yoloname=$(ls backup/*last.weights | cut -c 8- | rev | cut -c 14- | rev)
+# trace info
+echo "Found trained YOLO ${yoloname}!"
 echo "Found ${gpus}!"
 echo "GPU argument is ${gpuArg}"
 sleep 1
-darknet detector train data/obj.data cfg/yolo-obj.cfg backup/yolo-obj_last.weights -map ${@} -gpus ${gpuArg}
+darknet detector train data/obj.data cfg/${yoloname}.cfg backup/${yoloname}_last.weights -map ${@} -gpus ${gpuArg}
