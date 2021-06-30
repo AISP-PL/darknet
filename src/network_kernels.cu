@@ -235,11 +235,24 @@ void backward_network_gpu(network net, network_state state)
         cuda_pull_array(original_input, original_input_cpu, img_size);
         cuda_pull_array(original_delta, original_delta_cpu, img_size);
 
-        image attention_img = make_attention_image(img_size, original_delta_cpu, original_input_cpu, net.w, net.h, net.c);
+        image attention_img = make_attention_image(img_size, original_delta_cpu, original_input_cpu, net.w, net.h, net.c, 0.7);
         show_image(attention_img, "attention_img");
         resize_window_cv("attention_img", 500, 500);
 
+        //static int img_counter = 0;
+        //img_counter++;
+        //char buff[256];
+        //sprintf(buff, "attention_img_%d.png", img_counter);
+        //save_image_png(attention_img, buff);
         free_image(attention_img);
+
+        image attention_mask_img = make_attention_image(img_size, original_delta_cpu, original_delta_cpu, net.w, net.h, net.c, 1.0);
+        show_image(attention_mask_img, "attention_mask_img");
+        resize_window_cv("attention_mask_img", 500, 500);
+
+        //sprintf(buff, "attention_mask_img_%d.png", img_counter);
+        //save_image_png(attention_mask_img, buff);
+        free_image(attention_mask_img);
 
         free(original_input_cpu);
         free(original_delta_cpu);
@@ -271,6 +284,8 @@ void update_network_gpu(network net)
     float rate = get_current_rate(net);
     for(i = 0; i < net.n; ++i){
         layer l = net.layers[i];
+        if (l.train == 0) continue;
+
         l.t = get_current_batch(net);
         if (iteration_num > (net.max_batches * 1 / 2)) l.deform = 0;
         if (l.burnin_update && (l.burnin_update*net.burn_in > iteration_num)) continue;
