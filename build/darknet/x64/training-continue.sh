@@ -1,5 +1,12 @@
-# Get number of GPU's
-gpus=$(lspci | grep VGA.*NVIDIA | wc -l)
+
+# If number of GPU given as an argument
+if [ $# -eq 1 ]; then
+    gpus=${1}
+# Else automatic get number of GPU's
+else
+    gpus=$(lspci | grep VGA.*NVIDIA | wc -l)
+fi
+
 if [ ${gpus} -eq 0 ]; then
     echo "Error! Missing GPU!"
     exit -1
