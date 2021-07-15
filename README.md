@@ -144,6 +144,7 @@ About Darknet framework: http://pjreddie.com/darknet/
   - [How to improve object detection](#how-to-improve-object-detection)
   - [How to mark bounded boxes of objects and create annotation files](#how-to-mark-bounded-boxes-of-objects-and-create-annotation-files)
   - [How to use Yolo as DLL and SO libraries](#how-to-use-yolo-as-dll-and-so-libraries)
+- [Citation](#citation)
 
 
 
@@ -228,6 +229,12 @@ FPS on RTX 2070 (R) and Tesla V100 (V):
 
 - [yolov4-p5.cfg](https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4-p5.cfg) - 896x896 - **70.0% mAP@0.5 (51.6% AP@0.5:0.95) - 43(V) FPS** - xxx BFlops (xxx FMA) - 271 MB: [yolov4-p5.weights](https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-p5.weights)
   - pre-trained weights for training: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-p5.conv.232
+
+- [yolov4-csp-x-swish.cfg](https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4-csp-x-swish.cfg) - 640x640 - **69.9% mAP@0.5 (51.5% AP@0.5:0.95) - 23(R) FPS / 50(V) FPS** - 221 BFlops (110 FMA) - 381 MB: [yolov4-csp-x-swish.weights](https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-csp-x-swish.weights)
+  - pre-trained weights for training: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-csp-x-swish.conv.192
+
+- [yolov4-csp-swish.cfg](https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4-csp-swish.cfg) - 640x640 - **68.7% mAP@0.5 (50.0% AP@0.5:0.95) - 70(V) FPS** - 120 (60 FMA) - 202 MB: [yolov4-csp-swish.weights](https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-csp-swish.weights)
+  - pre-trained weights for training: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-csp-swish.conv.164
 
 - [yolov4x-mish.cfg](https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4x-mish.cfg) - 640x640 - **68.5% mAP@0.5 (50.1% AP@0.5:0.95) - 23(R) FPS / 50(V) FPS** - 221 BFlops (110 FMA) - 381 MB: [yolov4x-mish.weights](https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4x-mish.weights)
   - pre-trained weights for training: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4x-mish.conv.166
@@ -846,4 +853,28 @@ public:
         std::shared_ptr<image_t> mat_to_image_resize(cv::Mat mat) const;
 #endif
 };
+```
+
+## Citation
+
+```
+@misc{bochkovskiy2020yolov4,
+      title={YOLOv4: Optimal Speed and Accuracy of Object Detection}, 
+      author={Alexey Bochkovskiy and Chien-Yao Wang and Hong-Yuan Mark Liao},
+      year={2020},
+      eprint={2004.10934},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
+
+```
+@InProceedings{Wang_2021_CVPR,
+    author    = {Wang, Chien-Yao and Bochkovskiy, Alexey and Liao, Hong-Yuan Mark},
+    title     = {{Scaled-YOLOv4}: Scaling Cross Stage Partial Network},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2021},
+    pages     = {13029-13038}
+}
 ```
