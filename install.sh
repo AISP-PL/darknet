@@ -1,11 +1,15 @@
-mkdir build_release
-cd build_release
-cmake ..
-cmake --build . --target install --parallel 8
+#mkdir build_release
+#cd build_release
+#cmake ..
+#cmake --build . --target install --parallel 8
+make -j9 clean
+make -j9
+echo "Compiled."
 
-sudo ln -sf /home/spasz/python/pyAITracker/darknet/darknet /usr/bin/darknet
 
 # Install libraries
-sudo cp libdarknet.so /usr/local/lib/
-sudo cp include/darknet.h /usr/local/include/
+sudo ln -sf /home/spasz/python/pyAITracker/darknet/darknet /usr/bin/darknet
+sudo cp -rfv libdarknet.so /usr/local/lib/
+sudo cp -rfv include/darknet.h /usr/local/include/
 sudo ldconfig
+echo "Installed in system."
