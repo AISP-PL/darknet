@@ -18,7 +18,7 @@ case ${choice} in
             modelcfg="cfg/yolo-gddkia.cfg"
             ;;
         2)
-            model="yolov4-tiny.weights"
+            model="yolov4-tiny.conv.29"
             datacfg="cfg/yolo-plates.data"
             modelcfg="cfg/yolo-plates.cfg"
             ;;
