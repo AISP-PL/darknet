@@ -8,6 +8,7 @@ choice=$(dialog --clear --backtitle "Select" \
        15 40 4 \
 1 "YOLOv4-GDDKIA" \
 2 "YOLOv4-plates" \
+3 "YOLOv4-ALPR" \
 3 "YOLOv4-GDDKIA-CSP" 3>&2 2>&1 1>&3)
 
 clear
@@ -22,7 +23,12 @@ case ${choice} in
             datacfg="cfg/yolo-plates.data"
             modelcfg="cfg/yolo-plates.cfg"
             ;;
-#       3)
+        3)
+            model="yolov4-tiny.conv.29"
+            datacfg="cfg/yolo-alpr.data"
+            modelcfg="cfg/yolo-alpr.cfg"
+            ;;
+#       4)
 #            model="yolov4-csp.conv.142"
 #            modelcfg="cfg/yolov4-csp.cfg"
 #            ;;
