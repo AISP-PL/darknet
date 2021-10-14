@@ -27,4 +27,4 @@ echo "Found trained YOLO ${yoloname}!"
 echo "Found ${gpus}!"
 echo "GPU argument is ${gpuArg}"
 sleep 1
-darknet detector train data/${yoloname}.data cfg/${yoloname}.cfg backup/${yoloname}_last.weights -map ${@} -gpus ${gpuArg}
+darknet detector train cfg/${yoloname}.data cfg/${yoloname}.cfg backup/${yoloname}_last.weights -map ${@} -gpus ${gpuArg}
