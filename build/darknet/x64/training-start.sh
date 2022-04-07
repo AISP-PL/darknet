@@ -27,7 +27,7 @@ case ${choice} in
         3)
             model="yolov4-tiny.conv.29"
             datacfg="cfg/yolo-extgddkialite.data"
-            modelcfg="cfg/yolo-extgdkialite.cfg"
+            modelcfg="cfg/yolo-extgddkialite.cfg"
             ;;
         4)
             model="yolov4-tiny.conv.29"
