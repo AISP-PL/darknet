@@ -9,7 +9,7 @@ choice=$(dialog --clear --backtitle "Select" \
 1 "YOLOv4-GDDKIA" \
 2 "YOLOv4-ExtGDDKIA" \
 3 "YOLOv4-ExtGDDKIA-lite" \
-4 "YOLOv4-ALPR" \
+4 "YOLOv4-ALPROCR" \
 5 "YOLOv4-GDDKIA-CSP" 3>&2 2>&1 1>&3)
 
 clear
