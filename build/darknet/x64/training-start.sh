@@ -10,7 +10,7 @@ choice=$(dialog --clear --backtitle "Select" \
 2 "YOLOv4-ExtGDDKIA" \
 3 "YOLOv4-ExtGDDKIA-lite" \
 4 "YOLOv4-ALPROCR" \
-5 "YOLOv4-GDDKIA-CSP" 3>&2 2>&1 1>&3)
+5 "YOLOv4-ExtGDDKIA-CSP" 3>&2 2>&1 1>&3)
 
 clear
 case ${choice} in
@@ -34,10 +34,11 @@ case ${choice} in
             datacfg="cfg/yolo-alpr.data"
             modelcfg="cfg/yolo-alpr.cfg"
             ;;
-#       5)
-#            model="yolov4-csp.conv.142"
-#            modelcfg="cfg/yolov4-csp.cfg"
-#            ;;
+        5)
+            model="yolov4-csp.conv.142"
+            datacfg="cfg/yolo-extgddkia-csp.data"
+            modelcfg="cfg/yolo-extgddkia-csp.cfg"
+            ;;
         *)
             echo "Error! Unknown ${choice}!"
             exit -1
