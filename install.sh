@@ -8,7 +8,7 @@ echo "Compiled."
 
 
 # Install libraries
-sudo ln -sf /home/spasz/python/pyAITracker/darknet/darknet /usr/bin/darknet
+sudo ln -sf $(pwd)/darknet /usr/bin/darknet
 sudo cp -rfv libdarknet.so /usr/local/lib/
 sudo cp -rfv include/darknet.h /usr/local/include/
 sudo ldconfig
