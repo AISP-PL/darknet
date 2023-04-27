@@ -17,13 +17,14 @@ jobs:
       run: sudo apt install libopencv-dev
 
     - name: 'Install CUDA'
-      run: ./scripts/deploy-cuda.sh
+      run: ${{ github.workspace }}/scripts/deploy-cuda.sh
 
     - name: 'Create softlinks for CUDA'
       run: |
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/stubs/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so
+        source ${{ github.workspace }}/scripts/requested_cuda_version.sh
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so
 
     - name: 'LIBSO=1 GPU=0 CUDNN=0 OPENCV=0'
       run: |
@@ -71,16 +72,17 @@ jobs:
     - name: Update apt
       run: sudo apt update
     - name: Install dependencies
-      run: sudo apt install yasm nasm
+      run: sudo apt-get install -y yasm nasm gperf libgles2-mesa-dev libx11-dev libxft-dev libxext-dev libxrandr-dev libxi-dev libxcursor-dev libxdamage-dev libxinerama-dev libdbus-1-dev libxtst-dev
 
     - name: 'Install CUDA'
-      run: ./scripts/deploy-cuda.sh
+      run: ${{ github.workspace }}/scripts/deploy-cuda.sh
 
     - name: 'Create softlinks for CUDA'
       run: |
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/stubs/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so
+        source ${{ github.workspace }}/scripts/requested_cuda_version.sh
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so
 
     - name: 'Setup vcpkg and NuGet artifacts backend'
       shell: bash
@@ -98,7 +100,7 @@ jobs:
         CUDA_PATH: "/usr/local/cuda"
         CUDA_TOOLKIT_ROOT_DIR: "/usr/local/cuda"
         LD_LIBRARY_PATH: "/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH"
-      run: ./build.ps1 -UseVCPKG -DoNotUpdateVCPKG -EnableOPENCV -EnableCUDA -EnableCUDNN -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -UseVCPKG -DoNotUpdateVCPKG -EnableOPENCV -EnableCUDA -EnableCUDNN -DisableInteractive -DoNotUpdateTOOL
 
 
   ubuntu-vcpkg-opencv3-cuda:
@@ -111,16 +113,17 @@ jobs:
     - name: Update apt
       run: sudo apt update
     - name: Install dependencies
-      run: sudo apt install yasm nasm
+      run: sudo apt-get install -y yasm nasm gperf libgles2-mesa-dev libx11-dev libxft-dev libxext-dev libxrandr-dev libxi-dev libxcursor-dev libxdamage-dev libxinerama-dev libdbus-1-dev libxtst-dev
 
     - name: 'Install CUDA'
-      run: ./scripts/deploy-cuda.sh
+      run: ${{ github.workspace }}/scripts/deploy-cuda.sh
 
     - name: 'Create softlinks for CUDA'
       run: |
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/stubs/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so
+        source ${{ github.workspace }}/scripts/requested_cuda_version.sh
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so
 
     - name: 'Setup vcpkg and NuGet artifacts backend'
       shell: bash
@@ -138,7 +141,7 @@ jobs:
         CUDA_PATH: "/usr/local/cuda"
         CUDA_TOOLKIT_ROOT_DIR: "/usr/local/cuda"
         LD_LIBRARY_PATH: "/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH"
-      run: ./build.ps1 -UseVCPKG -DoNotUpdateVCPKG -EnableOPENCV -EnableCUDA -EnableCUDNN -ForceOpenCVVersion 3 -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -UseVCPKG -DoNotUpdateVCPKG -EnableOPENCV -EnableCUDA -EnableCUDNN -ForceOpenCVVersion 3 -DisableInteractive -DoNotUpdateTOOL
 
 
   ubuntu-vcpkg-opencv2-cuda:
@@ -151,16 +154,17 @@ jobs:
     - name: Update apt
       run: sudo apt update
     - name: Install dependencies
-      run: sudo apt install yasm nasm
+      run: sudo apt-get install -y yasm nasm gperf libgles2-mesa-dev libx11-dev libxft-dev libxext-dev libxrandr-dev libxi-dev libxcursor-dev libxdamage-dev libxinerama-dev libdbus-1-dev libxtst-dev
 
     - name: 'Install CUDA'
-      run: ./scripts/deploy-cuda.sh
+      run: ${{ github.workspace }}/scripts/deploy-cuda.sh
 
     - name: 'Create softlinks for CUDA'
       run: |
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/stubs/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so
+        source ${{ github.workspace }}/scripts/requested_cuda_version.sh
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so
 
     - name: 'Setup vcpkg and NuGet artifacts backend'
       shell: bash
@@ -178,7 +182,7 @@ jobs:
         CUDA_PATH: "/usr/local/cuda"
         CUDA_TOOLKIT_ROOT_DIR: "/usr/local/cuda"
         LD_LIBRARY_PATH: "/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH"
-      run: ./build.ps1 -UseVCPKG -DoNotUpdateVCPKG -EnableOPENCV -EnableCUDA -EnableCUDNN -ForceOpenCVVersion 2 -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -UseVCPKG -DoNotUpdateVCPKG -EnableOPENCV -EnableCUDA -EnableCUDNN -ForceOpenCVVersion 2 -DisableInteractive -DoNotUpdateTOOL
 
 
   ubuntu:
@@ -200,7 +204,7 @@ jobs:
         CUDA_PATH: "/usr/local/cuda"
         CUDA_TOOLKIT_ROOT_DIR: "/usr/local/cuda"
         LD_LIBRARY_PATH: "/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH"
-      run: ./build.ps1 -EnableOPENCV -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -EnableOPENCV -DisableInteractive -DoNotUpdateTOOL
 
 
   ubuntu-cuda:
@@ -216,13 +220,14 @@ jobs:
     - uses: lukka/get-cmake@latest
 
     - name: 'Install CUDA'
-      run: ./scripts/deploy-cuda.sh
+      run: ${{ github.workspace }}/scripts/deploy-cuda.sh
 
     - name: 'Create softlinks for CUDA'
       run: |
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/stubs/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so.1
-        sudo ln -s /usr/local/cuda-11.2/lib64/stubs/libcuda.so /usr/local/cuda-11.2/lib64/libcuda.so
+        source ${{ github.workspace }}/scripts/requested_cuda_version.sh
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so.1
+        sudo ln -s /usr/local/cuda-${CUDA_VERSION}/lib64/stubs/libcuda.so /usr/local/cuda-${CUDA_VERSION}/lib64/libcuda.so
 
     - name: 'Build'
       shell: pwsh
@@ -231,7 +236,7 @@ jobs:
         CUDA_PATH: "/usr/local/cuda"
         CUDA_TOOLKIT_ROOT_DIR: "/usr/local/cuda"
         LD_LIBRARY_PATH: "/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH"
-      run: ./build.ps1 -EnableOPENCV -EnableCUDA -EnableCUDNN -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -EnableOPENCV -EnableCUDA -EnableCUDNN -DisableInteractive -DoNotUpdateTOOL
 
 
   ubuntu-no-ocv-cpp:
@@ -243,7 +248,7 @@ jobs:
 
     - name: 'Build'
       shell: pwsh
-      run: ./build.ps1 -ForceCPP -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -ForceCPP -DisableInteractive -DoNotUpdateTOOL
 
 
   ubuntu-setup-sh:
@@ -262,7 +267,7 @@ jobs:
 
     - name: 'Setup'
       shell: bash
-      run: ./scripts/setup.sh -InstallCUDA -BypassDRIVER
+      run: ${{ github.workspace }}/scripts/setup.sh -InstallTOOLS -InstallCUDA -BypassDRIVER
 
 
   osx-vcpkg:
@@ -271,7 +276,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install dependencies
-      run: brew install libomp yasm nasm
+      run: brew install libomp yasm nasm pkg-config
 
     - uses: lukka/get-cmake@latest
 
@@ -286,7 +291,7 @@ jobs:
 
     - name: 'Build'
       shell: pwsh
-      run: ./build.ps1 -UseVCPKG -DoNotUpdateVCPKG -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -UseVCPKG -DoNotUpdateVCPKG -EnableOPENCV -DisableInteractive -DoNotUpdateTOOL
 
 
   osx:
@@ -301,7 +306,7 @@ jobs:
 
     - name: 'Build'
       shell: pwsh
-      run: ./build.ps1 -EnableOPENCV -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -EnableOPENCV -DisableInteractive -DoNotUpdateTOOL
 
 
   osx-no-ocv-no-omp-cpp:
@@ -313,7 +318,7 @@ jobs:
 
     - name: 'Build'
       shell: pwsh
-      run: ./build.ps1 -ForceCPP -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -ForceCPP -DisableInteractive -DoNotUpdateTOOL
 
 
   win-vcpkg:
@@ -334,7 +339,7 @@ jobs:
 
     - name: 'Build'
       shell: pwsh
-      run: ./build.ps1 -UseVCPKG -DoNotUpdateVCPKG -EnableOPENCV -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -UseVCPKG -DoNotUpdateVCPKG -EnableOPENCV -DisableInteractive -DoNotUpdateTOOL
 
 
   win-intlibs:
@@ -346,7 +351,7 @@ jobs:
 
     - name: 'Build'
       shell: pwsh
-      run: ./build.ps1 -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -DisableInteractive -DoNotUpdateTOOL
 
 
   win-setup-ps1:
@@ -365,7 +370,7 @@ jobs:
 
     - name: 'Setup'
       shell: pwsh
-      run: ./scripts/setup.ps1 -InstallCUDA
+      run: ${{ github.workspace }}/scripts/setup.ps1 -InstallCUDA
 
 
   win-intlibs-cpp:
@@ -377,7 +382,7 @@ jobs:
 
     - name: 'Build'
       shell: pwsh
-      run: ./build.ps1 -ForceCPP -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -ForceCPP -DisableInteractive -DoNotUpdateTOOL
 
 
   win-csharp:
@@ -389,7 +394,7 @@ jobs:
 
     - name: 'Build'
       shell: pwsh
-      run: ./build.ps1 -EnableCSharpWrapper -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -EnableCSharpWrapper -DisableInteractive -DoNotUpdateTOOL
 
 
   win-intlibs-cuda:
@@ -397,17 +402,29 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: 'Install CUDA'
-      run: ./scripts/deploy-cuda.ps1
+      run: ${{ github.workspace }}/scripts/deploy-cuda.ps1
 
     - uses: lukka/get-cmake@latest
 
     - name: 'Build'
       env:
-        CUDA_PATH: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.3"
-        CUDA_TOOLKIT_ROOT_DIR: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.3"
-        CUDACXX: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.3\\bin\\nvcc.exe"
+        CUDA_PATH: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.7"
+        CUDA_TOOLKIT_ROOT_DIR: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.7"
+        CUDACXX: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.7\\bin\\nvcc.exe"
       shell: pwsh
-      run: ./build.ps1 -EnableCUDA -DisableInteractive -DoNotUpdateDARKNET
+      run: ${{ github.workspace }}/build.ps1 -EnableCUDA -DisableInteractive -DoNotUpdateTOOL
+
+
+  win-powershell51:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: lukka/get-cmake@latest
+
+    - name: 'Build'
+      shell: powershell
+      run: ${{ github.workspace }}/build.ps1 -DisableInteractive -DoNotUpdateTOOL
 
 
   mingw:
