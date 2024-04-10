@@ -6,7 +6,7 @@ mkdir -p backup
 choice=$(dialog --clear --backtitle "Select" \
        --title "YOLO model to training" --menu "Choose one of the following models:" \
        15 40 5 \
-1 "YOLOv4-GDDKIA" \
+1 "YOLOv7-Drone" \
 2 "YOLOv4-ExtGDDKIA" \
 3 "YOLOv7-ExtGDDKIA (v7)" \
 4 "YOLOv4-ExtGDDKIA-lite" \
@@ -17,9 +17,9 @@ choice=$(dialog --clear --backtitle "Select" \
 clear
 case ${choice} in
         1)
-            model="yolov4.conv.137"
-            datacfg="cfg/yolo-gddkia.data"
-            modelcfg="cfg/yolo-gddkia.cfg"
+            model="yolov7.conv.132"
+            datacfg="cfg/yolov7-drone.data"
+            modelcfg="cfg/yolov7-drone.cfg"
             ;;
         2)
             model="yolov4.conv.137"
