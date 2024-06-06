@@ -1,11 +1,8 @@
 
-# If number of GPU given as an argument
-if [ $# -eq 1 ]; then
-    gpus=${1}
-# Else automatic get number of GPU's
-else
-    gpus=$(lspci | grep VGA.*NVIDIA | wc -l)
-fi
+args="$@"
+
+
+gpus=$(lspci | grep VGA.*NVIDIA | wc -l)
 
 if [ ${gpus} -eq 0 ]; then
     echo "Error! Missing GPU!"
@@ -27,4 +24,4 @@ echo "Found trained YOLO ${yoloname}!"
 echo "Found ${gpus}!"
 echo "GPU argument is ${gpuArg}"
 sleep 1
-darknet detector train cfg/${yoloname}.data cfg/${yoloname}.cfg backup/${yoloname}_last.weights -map ${@} -gpus ${gpuArg}
+darknet detector train cfg/${yoloname}.data cfg/${yoloname}.cfg backup/${yoloname}_last.weights -map ${@} -gpus ${gpuArg} ${args}
