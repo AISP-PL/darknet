@@ -39,7 +39,7 @@ echo "Compiled."
 
 # Install libraries
 sudo ln -sfv $(pwd)/darknet /usr/bin/darknet
-sudo cp -rfv $(pwd)libdarknet.so /usr/local/lib/
+sudo cp -rfv $(pwd)/libdarknet.so /usr/local/lib/
 sudo cp -rfv include/darknet.h /usr/local/include/
 sudo ldconfig
 echo "Installed in system."
