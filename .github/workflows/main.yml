@@ -1,0 +1,81 @@
+name: CI
+
+# Required for creating & uploading release assets
+permissions:
+  contents: write
+  packages: write
+
+on:
+  # 1) Run on any push to main
+  push:
+    branches: [ master ]
+    # 2) Also run on pushes to tags (like v1.0.0)
+    tags:
+      - 'v*'
+
+  # 3) Run on any pull request to main
+  pull_request:
+    branches: [ master ]
+
+  # Allows manual triggering from Actions tab
+  workflow_dispatch:
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # 3) Release Job
+  # ─────────────────────────────────────────────────────────────
+  docker-release:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - run: git fetch --prune --unshallow
+
+      - name: Get repository name
+        id: repo_name
+        shell: bash
+        run: |
+          repo=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "repo=darknet-cuda11.8" >> "$GITHUB_OUTPUT"
+
+      - name: Get version info
+        id: version
+        shell: bash
+        run: |
+          raw_tag=$(git describe --tags --always)
+          version=${raw_tag#v}
+          if [[ "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-([0-9]+)-g(.+)$ ]]; then
+            base=${BASH_REMATCH[1]}
+            count=${BASH_REMATCH[2]}
+            sha=${BASH_REMATCH[3]}
+            pep440_version="${base}.post${count}+g${sha}"
+          else
+            pep440_version="$version"
+          fi
+          echo "raw_tag=${raw_tag}" >> "$GITHUB_OUTPUT"
+          echo "pep440_version=${pep440_version}" >> "$GITHUB_OUTPUT"
+          echo "Building Docker image for liczbox-mqtt with tag=${raw_tag}, scm_version=${pep440_version}"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          build-args: |
+            GIT_TAG=${{ steps.version.outputs.raw_tag }}
+            PDM_BUILD_SCM_VERSION=${{ steps.version.outputs.pep440_version }}
+          tags: |
+            ghcr.io/${{ steps.repo_name.outputs.repo }}:latest
+            ghcr.io/${{ steps.repo_name.outputs.repo }}:${{ steps.version.outputs.raw_tag }}
