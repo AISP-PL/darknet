@@ -1,34 +1,45 @@
-FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04 AS builder
 
-# Ustaw ścieżkę dla bibliotek NVIDIA
-ENV PATH="/usr/local/nvidia/bin:${PATH}"
-ENV LD_LIBRARY_PATH="/usr/local/nvidia/lib:/usr/local/nvidia/lib64"
+# Timezone setting
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Europe/Warsaw \
+    PATH=/usr/local/nvidia/bin:${PATH} \
+    LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
 
-# Add : Timezone as Europe/Warsaw
-ENV TZ=Europe/Warsaw
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt update && apt install -y tzdata
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone
 
-# Add : Aptutils and pkg-config
-RUN apt-get update && apt-get install -y \
-    apt-utils \
-    pkg-config \
-    curl \
-    sudo
 
-# Add : Build tools + Opencv dev 
-RUN apt-get update && apt-get install -y \
-    software-properties-common \
-    build-essential make \
-    libopencv-dev  
+# Additional dependencies for building Darknet
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       build-essential \
+       cmake \
+       pkg-config \
+       libopencv-dev \
+       curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Darknet COPY to workdir /darknet
-COPY . /darknet
+# Copy and install Darknet
+WORKDIR /darknet
+COPY . .
+RUN chmod +x install.sh \
+    && ./install.sh
+
+# Stage 2: Runtime image
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
+
+# Timezone setting
+ENV TZ=Europe/Warsaw \
+    PATH=/usr/local/nvidia/bin:${PATH} \
+    LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone
+
 WORKDIR /darknet
 
-# Darknet : Building
-RUN ./install.sh
-
-
+# Copy the compiled Darknet from the builder stage
+COPY --from=builder /darknet .
 
 
