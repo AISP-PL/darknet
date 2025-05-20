@@ -36,10 +36,20 @@ ENV TZ=Europe/Warsaw \
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone
+    
+RUN apt-get update \
+&& apt-get install -y --no-install-recommends \
+        libopencv-core4.5 \
+        libopencv-imgproc4.5 \
+        libopencv-highgui4.5 \
+        libopencv-videoio4.5 \
+        libopencv-imgcodecs4.5 \
+        libgtk-3-0 \
+&& rm -rf /var/lib/apt/lists/*
 
-WORKDIR /darknet
 
 # Copy the compiled Darknet from the builder stage
+WORKDIR /darknet
 COPY --from=builder /darknet .
 
 
