@@ -40,7 +40,7 @@ jobs:
         shell: bash
         run: |
           repo=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "repo=darknet-cuda11.8" >> "$GITHUB_OUTPUT"
+          echo "repo=${repo}" >> "$GITHUB_OUTPUT"
 
       - name: Get version info
         id: version
