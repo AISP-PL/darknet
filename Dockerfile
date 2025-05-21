@@ -18,12 +18,14 @@ RUN apt-get update \
        cmake \
        pkg-config \
        libopencv-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* 
 
 # Darknet : Compile and strip
 WORKDIR /darknet
 COPY . .
-RUN make -j$(nproc) clean \
+RUN sed -i 's/OPENCV=1/OPENCV=0/g' Makefile \
+    && make -j$(nproc) clean \
     && make -j$(nproc) \
     && strip -s libdarknet.so \
     && strip -s darknet 
@@ -43,12 +45,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     
 # APT : Dependencies
 RUN apt-get update \
-&& apt-get install -y --no-install-recommends \
-        libopencv-core4.5 \
-        libopencv-imgproc4.5 \
-        libopencv-videoio4.5 \
-        libopencv-imgcodecs4.5 \
-&& rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 
 # Darknet : Copy files from builder
