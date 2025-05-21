@@ -52,4 +52,11 @@ RUN apt-get update \
 WORKDIR /darknet
 COPY --from=builder /darknet .
 
+# Install darknet libraries and binaries
+RUN cp -rfv /darknet/libdarknet.so /usr/local/lib/ \
+    && cp -rfv /darknet/include/darknet.h /usr/local/include/ \
+    && ln -sf /darknet/darknet /usr/bin/darknet \
+    && ldconfig
+
+
 
