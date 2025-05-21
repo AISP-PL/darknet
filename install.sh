@@ -1,7 +1,3 @@
-#mkdir build_release
-#cd build_release
-#cmake ..
-#cmake --build . --target install --parallel 8
 make -j9 clean
 make -j9
 echo "Compiled."
